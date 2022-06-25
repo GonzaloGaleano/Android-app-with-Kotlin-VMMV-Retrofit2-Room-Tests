@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.PostsActivity">
 
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ALL" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FAVORITES" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
