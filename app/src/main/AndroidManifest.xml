@@ -16,7 +16,7 @@
         android:theme="@style/Theme.JSONPlaceholderPosts"
         tools:targetApi="31">
         <activity
-            android:name=".ui.PostsActivity"
+            android:name=".ui.post.list.PostsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

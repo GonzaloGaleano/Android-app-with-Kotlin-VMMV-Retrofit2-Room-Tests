@@ -1,9 +1,12 @@
-package com.example.jsonplaceholderposts.ui
+package com.example.jsonplaceholderposts.ui.post.list
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.ActivityPostsBinding
 
 
@@ -19,7 +22,11 @@ class PostsActivity : AppCompatActivity() {
 
     private fun observerPost() {
         viewModel.posts.observe(this) { posts ->
-            println(posts)
+            prepareRecyclerView(binding.postsRecyclerView, posts)
         }
+    }
+
+    private fun prepareRecyclerView(recyclerView: RecyclerView, posts: List<Post>) {
+        recyclerView.adapter = PostListAdapter(posts)
     }
 }
