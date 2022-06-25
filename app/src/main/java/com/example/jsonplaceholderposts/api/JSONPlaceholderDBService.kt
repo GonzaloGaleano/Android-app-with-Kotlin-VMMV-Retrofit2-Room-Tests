@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface JSONPlaceholderDBService {
     @GET("posts")
-    fun getPosts(): Call<Post>
+    fun getPosts(): Call<List<Post>>
 
     @GET("posts/{postId}")
     fun getPost(
