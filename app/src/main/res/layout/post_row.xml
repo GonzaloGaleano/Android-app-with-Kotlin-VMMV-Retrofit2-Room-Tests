@@ -22,34 +22,50 @@
         <ImageView
             android:id="@+id/starIcon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="5dp"
             android:contentDescription="@string/star_icon"
             android:src="@drawable/ic_star_favorite"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/btnPost"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/nextArrow"
-            app:layout_constraintStart_toEndOf="@+id/starIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            android:padding="10dp"
-            android:text="@{post.title}"
-            tools:text="Post Title" />
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
+            >
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/nextArrow"
+                app:layout_constraintStart_toEndOf="@+id/starIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                android:padding="10dp"
+                android:text="@{post.title}"
+                tools:text="Post Title"
+                />
 
-        <ImageView
-            android:id="@+id/nextArrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/star_icon"
-            android:src="@drawable/ic_right_arrow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/nextArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="5dp"
+                android:contentDescription="@string/star_icon"
+                android:src="@drawable/ic_right_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
     </LinearLayout>
 </layout>
