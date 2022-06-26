@@ -18,9 +18,6 @@ class PostListAdapter(private val posts: List<Post>): RecyclerView.Adapter<PostL
         val post: Post = posts[position]
         holder.apply {
             binding.post = post
-            binding.starIcon.setOnClickListener {
-                mListener.onFav(post)
-            }
             binding.btnPost.setOnClickListener {
                 mListener.onPost(post)
             }
@@ -35,6 +32,5 @@ class PostListAdapter(private val posts: List<Post>): RecyclerView.Adapter<PostL
 
     interface OnItemListener {
         fun onPost(post: Post)
-        fun onFav(post: Post)
     }
 }

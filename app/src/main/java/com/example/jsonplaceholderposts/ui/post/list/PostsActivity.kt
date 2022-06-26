@@ -65,7 +65,4 @@ class PostsActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         }
     }
 
-    override fun onFav(post: Post) {
-        println("onFav() #${post.id}")
-    }
 }
