@@ -11,7 +11,7 @@ import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.ActivityPostBinding
-import com.example.jsonplaceholderposts.repository.PostRepository
+import com.example.jsonplaceholderposts.repository.ThePostDBRepository
 
 class PostActivity : AppCompatActivity() {
     private lateinit var menu: Menu
@@ -53,8 +53,8 @@ class PostActivity : AppCompatActivity() {
                 println("add to fav")
                 post.favorite = true
                 Thread{
-                    PostRepository.favoriteDao?.insertFavorite(Favorite(postId = post.id))
-                    PostRepository.postDao?.updatePost(post)
+                    ThePostDBRepository.favoriteDao?.insertFavorite(Favorite(postId = post.id))
+                    ThePostDBRepository.postDao?.updatePost(post)
                 }.start()
                 menuDisplayConfig()
             }
@@ -62,19 +62,19 @@ class PostActivity : AppCompatActivity() {
                 println("remove from favs")
                 post.favorite = false
                 Thread{
-                    PostRepository.favoriteDao?.deleteFavorite(Favorite(postId = post.id))
-                    PostRepository.postDao?.updatePost(post)
+                    ThePostDBRepository.favoriteDao?.deleteFavorite(Favorite(postId = post.id))
+                    ThePostDBRepository.postDao?.updatePost(post)
                 }.start()
                 menuDisplayConfig()
             }
             R.id.btnDeletePost -> {
                 println("deleting post")
                 Thread{
-                    PostRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
+                    ThePostDBRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
                     post.comments.forEach { comment ->
-                        PostRepository.commentDao?.deleteComment(comment)
+                        ThePostDBRepository.commentDao?.deleteComment(comment)
                     }
-                    PostRepository.postDao?.deletePost(post)
+                    ThePostDBRepository.postDao?.deletePost(post)
                 }.start()
                 finish()
             }

@@ -13,12 +13,15 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
+import com.example.jsonplaceholderposts.api.Env
+import com.example.jsonplaceholderposts.api.JSONPlaceholderDBService
+import com.example.jsonplaceholderposts.api.RetrofitServiceBuilder
 import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
-import com.example.jsonplaceholderposts.repository.PostRepository
+import com.example.jsonplaceholderposts.repository.ThePostDBRepository
 import com.example.jsonplaceholderposts.ui.post.show.PostActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -36,10 +39,13 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private var comments: List<Comment> = listOf()
     private var users: List<User> = listOf()
     private lateinit var adapter: PostListAdapter
-    private val viewModel: PostListViewModel by viewModels()
+    private val viewModel: PostListViewModel by viewModels {
+        PostLIstViewModelFactory(ThePostDBRepository)
+    }
     private lateinit var binding: ActivityPostListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         installSplashScreen().apply{
             setKeepOnScreenCondition{
                 (loadingPosts || loadingComments || loadingUsers)
@@ -81,14 +87,14 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
             val totalPostsToDelete = posts.size
             var totalDeleted = 0
             posts.forEach{ post ->
-                PostRepository.postsService.deletePost(post.id).apply {
+                ThePostDBRepository.postsService.deletePost(post.id).apply {
                     enqueue(object : Callback<Unit> {
                         override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                             println("#${post.id} deleted")
                             totalDeleted++
                             post.comments.forEach { comment ->
                                 Thread{
-                                    PostRepository.commentDao?.deleteComment(comment)
+                                    ThePostDBRepository.commentDao?.deleteComment(comment)
                                 }.start()
                             }
                             /*post.user?.let { user ->
@@ -97,8 +103,8 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
                                 }.start()
                             }*/
                             Thread {
-                                PostRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
-                                PostRepository.postDao?.deletePost(post)
+                                ThePostDBRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
+                                ThePostDBRepository.postDao?.deletePost(post)
                             }.start()
                             if (totalDeleted == totalPostsToDelete) {
                                 deleting = false
