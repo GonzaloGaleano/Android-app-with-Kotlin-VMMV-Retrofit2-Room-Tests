@@ -91,6 +91,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
                                 }.start()
                             }*/
                             Thread {
+                                PostRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
                                 PostRepository.postDao?.deletePost(post)
                             }.start()
                             if (totalDeleted == totalPostsToDelete) {
