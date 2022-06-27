@@ -18,9 +18,9 @@ class PostListAdapter(var posts: MutableList<Post>): RecyclerView.Adapter<PostLi
     override fun onBindViewHolder(holder: PostListViewHolder, position: Int) {
         val post: Post = posts[position]
         holder.apply {
-            binding.post = post
             binding.starFav.isVisible = post.favorite
             binding.starFavNo.isVisible = !post.favorite
+            binding.textViewTitle.text = post.title
             binding.btnPost.setOnClickListener {
                 mListener.onPost(post)
             }

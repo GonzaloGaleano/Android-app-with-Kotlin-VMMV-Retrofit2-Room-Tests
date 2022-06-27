@@ -1,78 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/btnPost"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground"
     >
-    <data>
-        <variable
-            name="post"
-            type="com.example.jsonplaceholderposts.data.Post"
-            />
-        <import type="android.view.View" />
-    </data>
 
-    <LinearLayout
-        android:id="@+id/btnPost"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/starFav"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="5dp"
+        android:contentDescription="@string/favorite_desc"
+        android:src="@drawable/ic_star_favorite"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/starFavNo"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="5dp"
+        android:contentDescription="@string/not_favorite_desc"
+        android:src="@drawable/ic_start_outline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/nextArrow"
+        app:layout_constraintStart_toEndOf="@+id/starIcon"
+        app:layout_constraintTop_toTopOf="parent"
         android:padding="10dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?android:attr/selectableItemBackground"
-        >
+        tools:text="Post Title"
+        />
 
-        <ImageView
-            android:id="@+id/starFav"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="5dp"
-            android:contentDescription="@string/favorite_desc"
-            android:src="@drawable/ic_star_favorite"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <ImageView
-            android:id="@+id/starFavNo"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="5dp"
-            android:contentDescription="@string/not_favorite_desc"
-            android:src="@drawable/ic_start_outline"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/nextArrow"
-            app:layout_constraintStart_toEndOf="@+id/starIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            android:padding="10dp"
-            android:text="@{post.title}"
-            tools:text="Post Title"
-            />
-
-        <ImageView
-            android:id="@+id/nextArrow"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="5dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_right_arrow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-    </LinearLayout>
-</layout>
+    <ImageView
+        android:id="@+id/nextArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="5dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_right_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+</LinearLayout>
