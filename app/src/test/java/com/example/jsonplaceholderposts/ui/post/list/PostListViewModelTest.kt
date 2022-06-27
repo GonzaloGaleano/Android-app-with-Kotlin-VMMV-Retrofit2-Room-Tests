@@ -8,8 +8,13 @@ import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.repository.PostRepository
+import org.hamcrest.CoreMatchers.hasItem
+import org.hamcrest.CoreMatchers.hasItems
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.hamcrest.core.IsCollectionContaining
+
 
 internal class PostListViewModelTest {
     @get:Rule
@@ -62,10 +67,13 @@ internal class PostListViewModelTest {
         }
         val viewModel = PostListViewModel(repository)
         val posts = viewModel.posts.value
-        val expectTotalComments = 3
-        val resultTotalComments = posts?.get(0)?.comments?.size ?: 0
-        assert(expectTotalComments == resultTotalComments) {
-            "resultTotalComments had to be $expectTotalComments but was $resultTotalComments"
-        }
+        val comments = posts?.get(0)?.comments ?: listOf()
+        val commentIds = comments.map { it.id }
+        assertThat(commentIds, hasItem(2))
+//        val expectTotalComments = 3
+//        val resultTotalComments = posts?.get(0)?.comments?.size ?: 0
+//        assert(expectTotalComments == resultTotalComments) {
+//            "resultTotalComments had to be $expectTotalComments but was $resultTotalComments"
+//        }
     }
 }
