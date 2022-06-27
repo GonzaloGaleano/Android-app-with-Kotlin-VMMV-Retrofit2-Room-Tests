@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
+import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.ActivityPostBinding
+import com.example.jsonplaceholderposts.ui.post.list.PostListAdapter
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
 class PostActivity : AppCompatActivity() {
@@ -18,13 +21,16 @@ class PostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
         intent.let {
             (it.getSerializableExtra(ARG_POST) as Post?)?.let{ post ->
                 this.post = post
                 binding.post = post
+                post.comments?.let { commens ->
+                    prepareRecyclerView(binding.commentsRecyclerView, commens)
+                }
             }
         }
-        setContentView(binding.root)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -47,6 +53,10 @@ class PostActivity : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    private fun prepareRecyclerView(recyclerView: RecyclerView, comments: List<Comment>) {
+        recyclerView.adapter = CommentsAdapter(comments)
     }
 
     private fun hideOption(id: Int) {
