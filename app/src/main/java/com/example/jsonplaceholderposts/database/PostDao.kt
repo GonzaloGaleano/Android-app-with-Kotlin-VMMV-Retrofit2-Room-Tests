@@ -16,7 +16,7 @@ interface PostDao {
     fun deletePost(post: Post)
 
 //    @Query("SELECT * FROM post p, comment c, user u WHERE p.userId = u.id AND c.postId = p.id")
-    @Query("SELECT * FROM post")
+    @Query("SELECT * FROM post ORDER BY favorite DESC")
     fun loadPosts(): LiveData<List<Post>>
 
     @Query("SELECT * FROM post WHERE favorite")
