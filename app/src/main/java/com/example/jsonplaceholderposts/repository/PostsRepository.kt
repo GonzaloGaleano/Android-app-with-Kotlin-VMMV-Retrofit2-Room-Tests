@@ -22,11 +22,12 @@ private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
 object PostsRepository {
     private var databse: PostsDatabase? = null
-    private var postDao: PostDao? = null
+    var postDao: PostDao? = null
     private var commentDao: CommentDao? = null
     private var userDao: UserDao? = null
-    private var favoriteDao: FavoriteDao? = null
+    var favoriteDao: FavoriteDao? = null
     private var retried: Boolean = false
+
     private val LOADING_POSTS = MutableLiveData<Boolean>()
     val loadingPostList: LiveData<Boolean> get() = LOADING_POSTS
 
@@ -66,7 +67,13 @@ object PostsRepository {
                 override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { posts ->
-                            getFavorites(posts)
+                            Thread{
+                                val favorites = favoriteDao?.getFavorites()
+                                posts.forEach{ post ->
+                                    post.favorite = favorites?.contains(Favorite(postId = post.id)) == true
+                                }
+                                postDao?.insertPosts(posts)
+                            }.start()
                         }
                     }
                     LOADING_POSTS.value = false
@@ -100,14 +107,8 @@ object PostsRepository {
         return postDao?.loadPosts() ?: MutableLiveData()
     }
 
-    fun getFavorites(posts: List<Post>) {
-        Thread{
-            val favorites = favoriteDao?.getFavorites()
-            posts.forEach{ post ->
-                post.favorite = favorites?.contains(Favorite(postId = post.id)) == true
-            }
-            postDao?.insertPosts(posts)
-        }.start()
+    fun getFavorites(): LiveData<List<Favorite>> {
+        return favoriteDao?.favoritesLive() ?: MutableLiveData()
     }
 
     fun getUsers(): LiveData<List<User>> {

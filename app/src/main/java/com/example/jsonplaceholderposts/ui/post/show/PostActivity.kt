@@ -9,8 +9,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
 import com.example.jsonplaceholderposts.data.Comment
+import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.ActivityPostBinding
+import com.example.jsonplaceholderposts.repository.PostsRepository
 import com.example.jsonplaceholderposts.ui.post.list.PostListAdapter
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
@@ -34,6 +36,11 @@ class PostActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         menuInflater.inflate(R.menu.menu_post, menu)
+        menuDisplayConfig()
+        return true
+    }
+
+    private fun menuDisplayConfig() {
         if (post.favorite) {
             hideOption(R.id.btnAddToFav)
             showOption(R.id.btnRemoveFromFav)
@@ -41,13 +48,27 @@ class PostActivity : AppCompatActivity() {
             showOption(R.id.btnAddToFav)
             hideOption(R.id.btnRemoveFromFav)
         }
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.btnAddToFav -> {
                 println("add to fav")
+                post.favorite = true
+                Thread{
+                    PostsRepository.favoriteDao?.insertFavorite(Favorite(postId = post.id))
+                    PostsRepository.postDao?.updatePost(post)
+                }.start()
+                menuDisplayConfig()
+            }
+            R.id.btnRemoveFromFav -> {
+                println("remove from favs")
+                post.favorite = false
+                Thread{
+                    PostsRepository.favoriteDao?.deleteFavorite(Favorite(postId = post.id))
+                    PostsRepository.postDao?.updatePost(post)
+                }.start()
+                menuDisplayConfig()
             }
         }
         return true

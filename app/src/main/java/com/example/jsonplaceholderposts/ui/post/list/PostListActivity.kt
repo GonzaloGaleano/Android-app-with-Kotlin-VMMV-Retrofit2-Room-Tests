@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
 import com.example.jsonplaceholderposts.data.Comment
+import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
@@ -22,9 +23,10 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private var loadingPosts: Boolean = false
     private var loadingComments: Boolean = false
     private var loadingUsers: Boolean = false
-    private var posts: List<Post>? = null
-    private var comments: List<Comment>? = null
-    private var users: List<User>? = null
+    private var favorites: List<Favorite> = listOf()
+    private var posts: List<Post> = listOf()
+    private var comments: List<Comment> = listOf()
+    private var users: List<User> = listOf()
     private lateinit var adapter: PostListAdapter
     private val viewModel: PostListViewModel by viewModels()
     private lateinit var binding: ActivityPostListBinding
@@ -32,7 +34,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         super.onCreate(savedInstanceState)
         binding = ActivityPostListBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        prepareRecyclerView(binding.postsRecyclerView, listOf())
+        prepareRecyclerView(binding.postsRecyclerView)
         observerPost()
     }
 
@@ -52,17 +54,17 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         viewModel.posts.observe(this) { posts ->
             this.posts = loadPostsData(posts)
         }
+        viewModel.favorites.observe(this) { favorites ->
+            this.favorites = favorites
+            loadPostsData(posts)
+        }
         viewModel.comments.observe(this) { comments ->
             this.comments = comments
-            posts?.let {
-                loadPostsData(it)
-            }
+            loadPostsData(posts)
         }
         viewModel.users.observe(this) { users ->
             this.users = users
-            posts?.let {
-                loadPostsData(it)
-            }
+            loadPostsData(posts)
         }
     }
 
@@ -72,19 +74,20 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadPostsData(posts: List<Post>): List<Post> {
-        users?.let {
-            posts.forEach{ post ->
-                post.user = it.first{ it.id == post.userId}
-            }
+        posts.forEach{ post ->
+            post.favorite = favorites.contains(Favorite(postId = post.id)) == true
+            post.user = users.first{ it.id == post.userId}
+            post.comments = comments.filter{ it.postId == post.id}
         }
-        comments?.let {
-            posts.forEach{ post ->
-                post.comments = it.filter{ it.postId == post.id}
-            }
-        }
-        if (adapter.posts != posts) {
-            adapter.posts = posts
+
+        if (adapter.posts.size != posts.size) {
+            adapter.posts = if (posts.isEmpty()) mutableListOf() else posts as MutableList<Post>
             adapter.notifyDataSetChanged()
+        } else {
+            for (i in 1 until posts.size) {
+                adapter.posts[i] = posts[i]
+                adapter.notifyItemChanged(i)
+            }
         }
         return posts
     }
@@ -104,8 +107,8 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         return true
     }
 
-    private fun prepareRecyclerView(recyclerView: RecyclerView, posts: List<Post>) {
-        adapter = PostListAdapter(posts)
+    private fun prepareRecyclerView(recyclerView: RecyclerView) {
+        adapter = PostListAdapter(mutableListOf())
         adapter.setOnItemListener(this)
         recyclerView.adapter = adapter
     }

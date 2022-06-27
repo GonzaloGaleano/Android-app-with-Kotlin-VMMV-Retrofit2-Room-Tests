@@ -25,24 +25,25 @@
         >
 
         <ImageView
+            android:id="@+id/starFav"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingHorizontal="5dp"
             android:contentDescription="@string/favorite_desc"
             android:src="@drawable/ic_star_favorite"
-            android:visibility="@{post.favorite?View.VISIBLE:View.GONE}"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
 
         <ImageView
+            android:id="@+id/starFavNo"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingHorizontal="5dp"
             android:contentDescription="@string/not_favorite_desc"
             android:src="@drawable/ic_start_outline"
-            android:visibility="@{post.favorite?View.GONE:View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
