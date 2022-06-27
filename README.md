@@ -9,6 +9,9 @@ Android app example using VMMV architectural pattern.
  - Select a specifict test and run it.
  - Or chose **Run 'All tests'** with contextual menu over app folder in the left project panel.
 
+## Banck-end API
+For this example i used https://jsonplaceholder.typicode.com
+
 ## Desing pattern
   The main design patter used is Material Design from (com.google.android.materia)
 
@@ -16,7 +19,7 @@ Android app example using VMMV architectural pattern.
  - Retrofit for http request
  - Room for data persistence
   
-## Benefits using the architecture with this libraries
+## Benefits using the MVVM architecture with these libraries
  - The example app is based on Google recomendation: https://developer.android.com/topic/architecture#recommended-app-arch
  - I used viewBinding and dataBinding to pass some view controls to the view file.
  - The repository is based on a inteface and the viewModel use an inyected depencency of the repository instance, this allow an easy way to test the viewModel.
