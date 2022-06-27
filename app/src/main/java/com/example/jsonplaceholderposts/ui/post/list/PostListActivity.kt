@@ -8,21 +8,20 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
 import com.example.jsonplaceholderposts.data.Post
-import com.example.jsonplaceholderposts.databinding.ActivityPostsBinding
+import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
 import com.example.jsonplaceholderposts.ui.post.show.PostActivity
 
 
-class PostsActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
+class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private lateinit var adapter: PostListAdapter
     private val viewModel: PostListViewModel by viewModels()
-    private lateinit var binding: ActivityPostsBinding
+    private lateinit var binding: ActivityPostListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPostsBinding.inflate(LayoutInflater.from(this))
+        binding = ActivityPostListBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         observerPost()
     }

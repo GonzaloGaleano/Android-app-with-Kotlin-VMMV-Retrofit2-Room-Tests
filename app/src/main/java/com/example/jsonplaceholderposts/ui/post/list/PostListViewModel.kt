@@ -20,7 +20,7 @@ class PostListViewModel: ViewModel() {
 
     fun loadPosts() {
         _loadingPostList.value = true
-        PostsRepository.getPost { posts ->
+        PostsRepository.getPostList { posts ->
             _posts.value = posts
             _loadingPostList.value = false
         }

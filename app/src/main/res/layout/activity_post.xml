@@ -47,31 +47,36 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/user"
+                    android:text="@{post.user.name}"
+                    tools:text="Name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="name"
+                    android:text="@{post.user.getAtUsername()}"
+                    tools:text="username"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="email"
+                    android:text="@{post.user.email}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="phone"
+                    android:text="@{post.user.phone}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="website"
+                    android:text="@{post.user.website}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     />
                 <View

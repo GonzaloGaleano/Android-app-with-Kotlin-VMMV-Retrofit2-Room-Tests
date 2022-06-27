@@ -6,5 +6,13 @@
         android:id="@+id/btnAddToFav"
         android:icon="@drawable/ic_start_outline"
         android:title="@string/favorito"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/btnRemoveFromFav"
+        android:icon="@drawable/ic_star_favorite"
+        android:title="@string/favorito"
+        android:visible="false"
+        app:showAsAction="always"
+        />
 </menu>

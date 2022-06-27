@@ -21,7 +21,7 @@
             android:exported="false" />
         <activity
             android:label="Posts"
-            android:name=".ui.post.list.PostsActivity"
+            android:name=".ui.post.list.PostListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

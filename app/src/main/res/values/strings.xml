@@ -2,9 +2,9 @@
     <string name="app_name">JSONPlaceholder Posts</string>
     <string name="ALL">ALL</string>
     <string name="FAVORITES">FAVORITES</string>
-    <string name="star_icon">star icon</string>
-    <string name="user">user:</string>
     <string name="comments">COMMENTS</string>
     <string name="favorito">Favorito</string>
     <string name="actualizar">Actualizar</string>
+    <string name="not_favorite_desc">Not favorite icon</string>
+    <string name="favorite_desc">Favorite icon</string>
 </resources>

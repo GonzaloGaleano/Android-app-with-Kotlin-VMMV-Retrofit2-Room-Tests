@@ -12,20 +12,31 @@ import com.example.jsonplaceholderposts.databinding.ActivityPostBinding
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
 class PostActivity : AppCompatActivity() {
+    private lateinit var menu: Menu
     private lateinit var binding: ActivityPostBinding
-    private var post: Post? = null
+    private lateinit var post: Post
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPostBinding.inflate(LayoutInflater.from(this))
         intent.let {
-            post = it.getSerializableExtra(ARG_POST) as Post?
-            binding.post = post
+            (it.getSerializableExtra(ARG_POST) as Post?)?.let{ post ->
+                this.post = post
+                binding.post = post
+            }
         }
         setContentView(binding.root)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        this.menu = menu
         menuInflater.inflate(R.menu.menu_post, menu)
+        if (post.favorite) {
+            hideOption(R.id.btnAddToFav)
+            showOption(R.id.btnRemoveFromFav)
+        } else {
+            showOption(R.id.btnAddToFav)
+            hideOption(R.id.btnRemoveFromFav)
+        }
         return true
     }
 
@@ -36,6 +47,22 @@ class PostActivity : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    private fun hideOption(id: Int) {
+        if (::menu.isInitialized) {
+            menu.findItem(id)?.let { item ->
+                item.isVisible = false
+            }
+        }
+    }
+
+    private fun showOption(id: Int) {
+        if (::menu.isInitialized) {
+            menu.findItem(id)?.let { item ->
+                item.isVisible = true
+            }
+        }
     }
 
     companion object {

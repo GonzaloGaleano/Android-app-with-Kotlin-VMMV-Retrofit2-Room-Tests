@@ -9,6 +9,7 @@
             name="post"
             type="com.example.jsonplaceholderposts.data.Post"
             />
+        <import type="android.view.View" />
     </data>
 
     <LinearLayout
@@ -24,15 +25,24 @@
         >
 
         <ImageView
-            android:id="@+id/starIcon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingHorizontal="5dp"
-            android:contentDescription="@string/star_icon"
+            android:contentDescription="@string/favorite_desc"
             android:src="@drawable/ic_star_favorite"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground"
+            android:visibility="@{post.favorite?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="5dp"
+            android:contentDescription="@string/not_favorite_desc"
+            android:src="@drawable/ic_start_outline"
+            android:visibility="@{post.favorite?View.GONE:View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingHorizontal="5dp"
-            android:contentDescription="@string/star_icon"
+            android:contentDescription="@null"
             android:src="@drawable/ic_right_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
