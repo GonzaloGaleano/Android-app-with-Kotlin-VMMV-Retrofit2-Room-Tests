@@ -14,6 +14,8 @@ internal class UserTest {
                 phone = "+999999999",
                 website = "www.example.com",
             )
-        assert("@fakeusername" == user.getAtUsername()) { "Error getting user.getAtUsername()" }
+        val expectResult = "@fakeusername"
+        val result = user.getAtUsername()
+        assert( expectResult == result) { "Error getting user.getAtUsername(). Expect $expectResult but returned $result" }
     }
 }
