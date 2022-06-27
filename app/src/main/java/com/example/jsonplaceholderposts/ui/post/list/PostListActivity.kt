@@ -24,7 +24,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private var loadingComments: Boolean = false
     private var loadingUsers: Boolean = false
     private var favorites: List<Favorite> = listOf()
-    private var posts: List<Post> = listOf()
+    private var posts: MutableList<Post> = mutableListOf()
     private var comments: List<Comment> = listOf()
     private var users: List<User> = listOf()
     private lateinit var adapter: PostListAdapter
@@ -36,6 +36,20 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         setContentView(binding.root)
         prepareRecyclerView(binding.postsRecyclerView)
         observerPost()
+        loadBtnActions()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun loadBtnActions() {
+        binding.btnFavoritesPosts.setOnClickListener {
+            val favoritesFiltered = posts.filter { it.favorite }
+            adapter.posts =  if (favoritesFiltered.isEmpty()) mutableListOf() else favoritesFiltered as MutableList<Post>
+            adapter.notifyDataSetChanged()
+        }
+        binding.btnAllPosts.setOnClickListener {
+            adapter.posts =  posts
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun observerPost() {
@@ -52,7 +66,9 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
             displayLoading()
         }
         viewModel.posts.observe(this) { posts ->
-            this.posts = loadPostsData(posts)
+            val nPosts: MutableList<Post> = posts.ifEmpty { mutableListOf() } as MutableList<Post>
+            adapter.posts =  nPosts
+            this.posts = loadPostsData(nPosts)
         }
         viewModel.favorites.observe(this) { favorites ->
             this.favorites = favorites
@@ -73,7 +89,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun loadPostsData(posts: List<Post>): List<Post> {
+    private fun loadPostsData(posts: MutableList<Post>): MutableList<Post> {
         posts.forEach{ post ->
             post.favorite = favorites.contains(Favorite(postId = post.id)) == true
             post.user = users.first{ it.id == post.userId}
@@ -81,7 +97,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         }
 
         if (adapter.posts.size != posts.size) {
-            adapter.posts = if (posts.isEmpty()) mutableListOf() else posts as MutableList<Post>
+            adapter.posts = if (posts.isEmpty()) mutableListOf() else posts
             adapter.notifyDataSetChanged()
         } else {
             for (i in 1 until posts.size) {
