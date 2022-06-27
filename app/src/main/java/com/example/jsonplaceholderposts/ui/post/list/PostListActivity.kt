@@ -20,6 +20,7 @@ import com.example.jsonplaceholderposts.ui.post.show.PostActivity
 
 
 class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
+    private var filterFavorites: Boolean = false
     private var loadingPosts: Boolean = false
     private var loadingComments: Boolean = false
     private var loadingUsers: Boolean = false
@@ -42,13 +43,12 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadBtnActions() {
         binding.btnFavoritesPosts.setOnClickListener {
-            val favoritesFiltered = posts.filter { it.favorite }
-            adapter.posts =  if (favoritesFiltered.isEmpty()) mutableListOf() else favoritesFiltered as MutableList<Post>
-            adapter.notifyDataSetChanged()
+            filterFavorites = true
+            loadPostsData()
         }
         binding.btnAllPosts.setOnClickListener {
-            adapter.posts =  posts
-            adapter.notifyDataSetChanged()
+            filterFavorites = false
+            loadPostsData()
         }
     }
 
@@ -68,19 +68,20 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
         viewModel.posts.observe(this) { posts ->
             val nPosts: MutableList<Post> = posts.ifEmpty { mutableListOf() } as MutableList<Post>
             adapter.posts =  nPosts
-            this.posts = loadPostsData(nPosts)
+            this.posts = nPosts
+            loadPostsData()
         }
         viewModel.favorites.observe(this) { favorites ->
             this.favorites = favorites
-            loadPostsData(posts)
+            loadPostsData()
         }
         viewModel.comments.observe(this) { comments ->
             this.comments = comments
-            loadPostsData(posts)
+            loadPostsData()
         }
         viewModel.users.observe(this) { users ->
             this.users = users
-            loadPostsData(posts)
+            loadPostsData()
         }
     }
 
@@ -89,23 +90,23 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun loadPostsData(posts: MutableList<Post>): MutableList<Post> {
-        posts.forEach{ post ->
+    private fun loadPostsData() {
+        val filteredPost = if (filterFavorites) posts.filter { it.favorite } else posts
+        filteredPost.forEach{ post ->
             post.favorite = favorites.contains(Favorite(postId = post.id)) == true
             post.user = users.first{ it.id == post.userId}
             post.comments = comments.filter{ it.postId == post.id}
         }
 
-        if (adapter.posts.size != posts.size) {
-            adapter.posts = if (posts.isEmpty()) mutableListOf() else posts
+        if (adapter.posts.size != filteredPost.size) {
+            adapter.posts = if (filteredPost.isEmpty()) mutableListOf() else filteredPost as MutableList<Post>
             adapter.notifyDataSetChanged()
         } else {
-            for (i in 1 until posts.size) {
-                adapter.posts[i] = posts[i]
+            for (i in 1 until filteredPost.size) {
+                adapter.posts[i] = filteredPost[i]
                 adapter.notifyItemChanged(i)
             }
         }
-        return posts
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
