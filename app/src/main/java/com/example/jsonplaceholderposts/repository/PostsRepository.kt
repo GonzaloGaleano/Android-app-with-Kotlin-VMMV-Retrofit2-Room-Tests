@@ -23,8 +23,8 @@ private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 object PostsRepository {
     private var databse: PostsDatabase? = null
     var postDao: PostDao? = null
-    private var commentDao: CommentDao? = null
-    private var userDao: UserDao? = null
+    var commentDao: CommentDao? = null
+    var userDao: UserDao? = null
     var favoriteDao: FavoriteDao? = null
     private var retried: Boolean = false
 
@@ -37,7 +37,7 @@ object PostsRepository {
     private val LOADING_USERS = MutableLiveData<Boolean>()
     val loadingUsers: LiveData<Boolean> get() = LOADING_USERS
 
-    private val postsService: JSONPlaceholderDBService = RetrofitServiceBuilder(BASE_URL)
+    val postsService: JSONPlaceholderDBService = RetrofitServiceBuilder(BASE_URL)
         .buildService(JSONPlaceholderDBService::class.java)
 
     init {

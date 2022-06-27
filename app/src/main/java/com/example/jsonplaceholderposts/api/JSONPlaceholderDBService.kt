@@ -4,6 +4,7 @@ import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import retrofit2.Call
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -16,5 +17,8 @@ interface JSONPlaceholderDBService {
 
     @GET("comments")
     fun getComments(): Call<List<Comment>>
+
+    @DELETE ("publications/{postId}")
+    fun deletePost(@Path("postId") postId: Int): Call<Unit>
 
 }

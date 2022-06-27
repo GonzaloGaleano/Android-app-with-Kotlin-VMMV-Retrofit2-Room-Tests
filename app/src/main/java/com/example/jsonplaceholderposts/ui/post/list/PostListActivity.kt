@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
@@ -16,10 +17,15 @@ import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
+import com.example.jsonplaceholderposts.repository.PostsRepository
 import com.example.jsonplaceholderposts.ui.post.show.PostActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
+    private var deleting: Boolean = false
     private var filterFavorites: Boolean = false
     private var loadingPosts: Boolean = false
     private var loadingComments: Boolean = false
@@ -43,12 +49,65 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadBtnActions() {
         binding.btnFavoritesPosts.setOnClickListener {
-            filterFavorites = true
-            loadPostsData()
+            if (!deleting) {
+                filterFavorites = true
+                loadPostsData()
+            }
         }
         binding.btnAllPosts.setOnClickListener {
-            filterFavorites = false
-            loadPostsData()
+            if (!deleting) {
+                filterFavorites = false
+                loadPostsData()
+            }
+        }
+        binding.btnDeleteAll.setOnClickListener {
+            if (loadingPosts || loadingComments || loadingUsers) {
+                Toast.makeText(
+                    this,
+                    "loading data in progress",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            deleting = true
+            displayLoading()
+            val totalPostsToDelete = posts.size
+            var totalDeleted = 0
+            posts.forEach{ post ->
+                PostsRepository.postsService.deletePost(post.id).apply {
+                    enqueue(object : Callback<Unit> {
+                        override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                            println("#${post.id} deleted")
+                            totalDeleted++
+                            post.comments.forEach { comment ->
+                                Thread{
+                                    PostsRepository.commentDao?.deleteComment(comment)
+                                }.start()
+                            }
+                            /*post.user?.let { user ->
+                                Thread{
+                                    PostsRepository.userDao?.deleteUser(user)
+                                }.start()
+                            }*/
+                            Thread {
+                                PostsRepository.postDao?.deletePost(post)
+                            }.start()
+                            if (totalDeleted == totalPostsToDelete) {
+                                deleting = false
+                                displayLoading()
+//                                viewModel.loadPosts()
+                                adapter.posts = mutableListOf()
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Unit>, t: Throwable) {
+                            Toast.makeText(this@PostListActivity, t.localizedMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+            }
         }
     }
 
@@ -86,25 +145,32 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     }
 
     private fun displayLoading() {
-        binding.progressBar.visibility = if (loadingPosts || loadingUsers || loadingComments) View.VISIBLE else View.GONE
+        binding.progressBar.visibility = if (loadingPosts || loadingUsers || loadingComments || deleting) View.VISIBLE else View.GONE
+        binding.btnDeleteAll.isEnabled = !(loadingPosts || loadingUsers || loadingComments || deleting)
+        binding.btnDeleteAll.alpha = if (loadingPosts || loadingUsers || loadingComments || deleting) .5F else 1F
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun loadPostsData() {
-        val filteredPost = if (filterFavorites) posts.filter { it.favorite } else posts
-        filteredPost.forEach{ post ->
-            post.favorite = favorites.contains(Favorite(postId = post.id)) == true
-            post.user = users.first{ it.id == post.userId}
-            post.comments = comments.filter{ it.postId == post.id}
-        }
+        if (!deleting) {
+            val filteredPost = if (filterFavorites) posts.filter { it.favorite } else posts
+            filteredPost.forEach{ post ->
+                post.favorite = favorites.contains(Favorite(postId = post.id)) == true
+                post.user = users.firstOrNull{ it.id == post.userId}
+                post.comments = comments.filter{ it.postId == post.id}
+            }
 
-        if (adapter.posts.size != filteredPost.size) {
-            adapter.posts = if (filteredPost.isEmpty()) mutableListOf() else filteredPost as MutableList<Post>
-            adapter.notifyDataSetChanged()
-        } else {
-            for (i in 1 until filteredPost.size) {
-                adapter.posts[i] = filteredPost[i]
-                adapter.notifyItemChanged(i)
+            binding.btnDeleteAll.isEnabled = filteredPost.isNotEmpty()
+            binding.btnDeleteAll.alpha = if (filteredPost.isEmpty()) .5F else 1F
+
+            if (adapter.posts.size != filteredPost.size) {
+                adapter.posts = if (filteredPost.isEmpty()) mutableListOf() else filteredPost as MutableList<Post>
+                adapter.notifyDataSetChanged()
+            } else {
+                for (i in 1 until filteredPost.size) {
+                    adapter.posts[i] = filteredPost[i]
+                    adapter.notifyItemChanged(i)
+                }
             }
         }
     }
@@ -117,8 +183,10 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.btnRefresh -> {
-                println("refresh...")
-                viewModel.loadPosts()
+                if (!deleting) {
+                    println("refresh...")
+                    viewModel.loadPosts()
+                }
             }
         }
         return true
@@ -131,10 +199,12 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     }
 
     override fun onPost(post: Post) {
-        println("onPost() #${post.id}")
-        Intent(this, PostActivity::class.java).apply {
-            putExtra(PostActivity.ARG_POST, post)
-            startActivity(this)
+        if (!deleting) {
+            println("onPost() #${post.id}")
+            Intent(this, PostActivity::class.java).apply {
+                putExtra(PostActivity.ARG_POST, post)
+                startActivity(this)
+            }
         }
     }
 
