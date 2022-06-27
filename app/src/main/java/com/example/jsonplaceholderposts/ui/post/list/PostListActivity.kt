@@ -17,7 +17,7 @@ import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
-import com.example.jsonplaceholderposts.repository.PostsRepository
+import com.example.jsonplaceholderposts.repository.PostRepository
 import com.example.jsonplaceholderposts.ui.post.show.PostActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -75,14 +75,14 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
             val totalPostsToDelete = posts.size
             var totalDeleted = 0
             posts.forEach{ post ->
-                PostsRepository.postsService.deletePost(post.id).apply {
+                PostRepository.postsService.deletePost(post.id).apply {
                     enqueue(object : Callback<Unit> {
                         override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                             println("#${post.id} deleted")
                             totalDeleted++
                             post.comments.forEach { comment ->
                                 Thread{
-                                    PostsRepository.commentDao?.deleteComment(comment)
+                                    PostRepository.commentDao?.deleteComment(comment)
                                 }.start()
                             }
                             /*post.user?.let { user ->
@@ -91,7 +91,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
                                 }.start()
                             }*/
                             Thread {
-                                PostsRepository.postDao?.deletePost(post)
+                                PostRepository.postDao?.deletePost(post)
                             }.start()
                             if (totalDeleted == totalPostsToDelete) {
                                 deleting = false
@@ -163,15 +163,8 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
             binding.btnDeleteAll.isEnabled = filteredPost.isNotEmpty()
             binding.btnDeleteAll.alpha = if (filteredPost.isEmpty()) .5F else 1F
 
-            if (adapter.posts.size != filteredPost.size) {
-                adapter.posts = if (filteredPost.isEmpty()) mutableListOf() else filteredPost as MutableList<Post>
-                adapter.notifyDataSetChanged()
-            } else {
-                for (i in 1 until filteredPost.size) {
-                    adapter.posts[i] = filteredPost[i]
-                    adapter.notifyItemChanged(i)
-                }
-            }
+            adapter.posts = if (filteredPost.isEmpty()) mutableListOf() else filteredPost as MutableList<Post>
+            adapter.notifyDataSetChanged()
         }
     }
 

@@ -8,4 +8,5 @@
     <string name="not_favorite_desc">Not favorite icon</string>
     <string name="favorite_desc">Favorite icon</string>
     <string name="delete_all">delete all</string>
+    <string name="delete_post">Delete post</string>
 </resources>

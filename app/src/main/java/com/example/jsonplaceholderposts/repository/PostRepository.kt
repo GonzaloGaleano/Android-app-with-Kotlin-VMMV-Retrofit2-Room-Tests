@@ -20,7 +20,7 @@ import kotlin.random.Random
 
 private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
-object PostsRepository {
+object PostRepository {
     private var databse: PostsDatabase? = null
     var postDao: PostDao? = null
     var commentDao: CommentDao? = null

@@ -15,4 +15,12 @@
         android:visible="false"
         app:showAsAction="always"
         />
+
+
+    <item
+        android:id="@+id/btnDeletePost"
+        android:icon="@drawable/ic_delete_outline"
+        android:title="@string/delete_post"
+        app:showAsAction="never" />
+
 </menu>

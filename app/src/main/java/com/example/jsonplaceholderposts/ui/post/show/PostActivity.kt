@@ -5,16 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
 import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.ActivityPostBinding
-import com.example.jsonplaceholderposts.repository.PostsRepository
-import com.example.jsonplaceholderposts.ui.post.list.PostListAdapter
-import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.example.jsonplaceholderposts.repository.PostRepository
 
 class PostActivity : AppCompatActivity() {
     private lateinit var menu: Menu
@@ -56,8 +53,8 @@ class PostActivity : AppCompatActivity() {
                 println("add to fav")
                 post.favorite = true
                 Thread{
-                    PostsRepository.favoriteDao?.insertFavorite(Favorite(postId = post.id))
-                    PostsRepository.postDao?.updatePost(post)
+                    PostRepository.favoriteDao?.insertFavorite(Favorite(postId = post.id))
+                    PostRepository.postDao?.updatePost(post)
                 }.start()
                 menuDisplayConfig()
             }
@@ -65,10 +62,21 @@ class PostActivity : AppCompatActivity() {
                 println("remove from favs")
                 post.favorite = false
                 Thread{
-                    PostsRepository.favoriteDao?.deleteFavorite(Favorite(postId = post.id))
-                    PostsRepository.postDao?.updatePost(post)
+                    PostRepository.favoriteDao?.deleteFavorite(Favorite(postId = post.id))
+                    PostRepository.postDao?.updatePost(post)
                 }.start()
                 menuDisplayConfig()
+            }
+            R.id.btnDeletePost -> {
+                println("deleting post")
+                Thread{
+                    PostRepository.favoriteDao?.deleteFavorite(Favorite(post.id))
+                    post.comments.forEach { comment ->
+                        PostRepository.commentDao?.deleteComment(comment)
+                    }
+                    PostRepository.postDao?.deletePost(post)
+                }.start()
+                finish()
             }
         }
         return true
