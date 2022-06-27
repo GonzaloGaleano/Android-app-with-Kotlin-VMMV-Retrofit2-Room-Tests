@@ -14,11 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".PostApplication"
-        android:theme="@style/Theme.JSONPlaceholderPosts"
+        android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
         <activity
             android:label="Post"
             android:name=".ui.post.show.PostActivity"
+            android:theme="@style/Theme.JSONPlaceholderPosts"
             android:exported="false" />
         <activity
             android:label="Posts"

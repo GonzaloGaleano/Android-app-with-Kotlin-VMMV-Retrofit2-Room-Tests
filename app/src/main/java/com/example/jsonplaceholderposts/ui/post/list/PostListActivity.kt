@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
 import com.example.jsonplaceholderposts.data.Comment
@@ -27,9 +28,9 @@ import retrofit2.Response
 class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private var deleting: Boolean = false
     private var filterFavorites: Boolean = false
-    private var loadingPosts: Boolean = false
-    private var loadingComments: Boolean = false
-    private var loadingUsers: Boolean = false
+    private var loadingPosts: Boolean = true
+    private var loadingComments: Boolean = true
+    private var loadingUsers: Boolean = true
     private var favorites: List<Favorite> = listOf()
     private var posts: MutableList<Post> = mutableListOf()
     private var comments: List<Comment> = listOf()
@@ -39,6 +40,11 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private lateinit var binding: ActivityPostListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen().apply{
+            setKeepOnScreenCondition{
+                (loadingPosts || loadingComments || loadingUsers)
+            }
+        }
         binding = ActivityPostListBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         prepareRecyclerView(binding.postsRecyclerView)
