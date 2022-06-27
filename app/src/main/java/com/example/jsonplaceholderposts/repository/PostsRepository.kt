@@ -1,10 +1,16 @@
 package com.example.jsonplaceholderposts.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.room.Room
+import com.example.jsonplaceholderposts.PostApplication
 import com.example.jsonplaceholderposts.api.JSONPlaceholderDBService
 import com.example.jsonplaceholderposts.api.RetrofitServiceBuilder
 import com.example.jsonplaceholderposts.data.Comment
+import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
+import com.example.jsonplaceholderposts.database.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,29 +21,66 @@ import kotlin.random.Random
 private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
 object PostsRepository {
+    private var databse: PostsDatabase? = null
+    private var postDao: PostDao? = null
+    private var commentDao: CommentDao? = null
+    private var userDao: UserDao? = null
+    private var favoriteDao: FavoriteDao? = null
     private var retried: Boolean = false
+    private val LOADING_POSTS = MutableLiveData<Boolean>()
+    val loadingPostList: LiveData<Boolean> get() = LOADING_POSTS
+
+    private val LOADING_COMMENTS = MutableLiveData<Boolean>()
+    val loadingComments: LiveData<Boolean> get() = LOADING_COMMENTS
+
+    private val LOADING_USERS = MutableLiveData<Boolean>()
+    val loadingUsers: LiveData<Boolean> get() = LOADING_USERS
+
     private val postsService: JSONPlaceholderDBService = RetrofitServiceBuilder(BASE_URL)
         .buildService(JSONPlaceholderDBService::class.java)
 
-    fun getPostList(onPosts: (List<Post>) -> Unit) {
+    init {
+        PostApplication.appContext().let { context ->
+            databse = Room.databaseBuilder(
+                context,
+                PostsDatabase::class.java,
+                "posts-db"
+            ).build()
+            postDao = databse?.postDao()
+            commentDao = databse?.commentDao()
+            userDao = databse?.userDao()
+            favoriteDao = databse?.favoriteDao()
+        }
+    }
+
+    fun refreshData() {
+        getPostList()
+        getComments()
+        getUsers()
+    }
+
+    fun getPostList(): LiveData<List<Post>> {
+        LOADING_POSTS.value = true
         postsService.getPosts().apply {
             enqueue(object : Callback<List<Post>> {
                 override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { posts ->
-                            getFavorites(posts, onPosts)
+                            getFavorites(posts)
                         }
                     }
+                    LOADING_POSTS.value = false
                 }
                 override fun onFailure(call: Call<List<Post>>, t: Throwable) {
+                    LOADING_POSTS.value = false
                     when {
                         t is SocketTimeoutException && !retried -> {
                             retried = !retried
-                            getPostList(onPosts)
+                            getPostList()
                         }
                         t is IOException && !retried -> {
                             retried = !retried
-                            getPostList(onPosts)
+                            getPostList()
                         }
                         else -> {
                             retried = !retried
@@ -49,43 +92,48 @@ object PostsRepository {
                                     println("Network Error :: " + t.localizedMessage)
                                 }
                             }
-                            onPosts(emptyList())
                         }
                     }
                 }
             })
         }
+        return postDao?.loadPosts() ?: MutableLiveData()
     }
 
-    fun getFavorites(posts: List<Post>, onPosts: (List<Post>) -> Unit) {
-        posts.forEach { post ->
-            post.favorite = Random.nextBoolean()
-        }
-        getUsers(posts, onPosts)
+    fun getFavorites(posts: List<Post>) {
+        Thread{
+            val favorites = favoriteDao?.getFavorites()
+            posts.forEach{ post ->
+                post.favorite = favorites?.contains(Favorite(postId = post.id)) == true
+            }
+            postDao?.insertPosts(posts)
+        }.start()
     }
 
-    fun getUsers(posts: List<Post>, onPosts: (List<Post>) -> Unit) {
+    fun getUsers(): LiveData<List<User>> {
+        LOADING_USERS.value = true
         postsService.getUsers().apply {
             enqueue(object : Callback<List<User>> {
                 override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { users ->
-                            posts.forEach { post ->
-                                post.user = users.first { user -> post.userId == user.id}
-                            }
-                            getComments(posts, onPosts)
+                            Thread{
+                                userDao?.insertUsers(users)
+                            }.start()
                         }
                     }
+                    LOADING_USERS.value = false
                 }
                 override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                    LOADING_USERS.value = false
                     when {
                         t is SocketTimeoutException && !retried -> {
                             retried = !retried
-                            getUsers(posts, onPosts)
+                            getUsers()
                         }
                         t is IOException && !retried -> {
                             retried = !retried
-                            getUsers(posts, onPosts)
+                            getUsers()
                         }
                         else -> {
                             retried = !retried
@@ -97,39 +145,43 @@ object PostsRepository {
                                     println("Network Error :: " + t.localizedMessage)
                                 }
                             }
-                            onPosts(emptyList())
                         }
                     }
                 }
             })
         }
+        return userDao?.loadUsers() ?: MutableLiveData()
     }
 
-    fun getComments(posts: List<Post>, onPosts: (List<Post>) -> Unit) {
+    fun getComments(): LiveData<List<Comment>> {
+        LOADING_COMMENTS.value = true
         postsService.getComments().apply {
             enqueue(object : Callback<List<Comment>> {
                 override fun onResponse(call: Call<List<Comment>>, response: Response<List<Comment>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { comments ->
-                            posts.forEach { post ->
-                                post.comments = comments.filter { comment -> comment.postId == post.id }
-                            }
-                            onPosts(posts)
+                            Thread{
+                                commentDao?.insertComments(comments)
+                            }.start()
+                            LOADING_POSTS.value = false
                         }
                     }
+                    LOADING_COMMENTS.value = false
                 }
                 override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
+                    LOADING_COMMENTS.value = false
                     when {
                         t is SocketTimeoutException && !retried -> {
                             retried = !retried
-                            getComments(posts, onPosts)
+                            getComments()
                         }
                         t is IOException && !retried -> {
                             retried = !retried
-                            getComments(posts, onPosts)
+                            getComments()
                         }
                         else -> {
                             retried = !retried
+                            LOADING_POSTS.value = false
                             when {
                                 call.isCanceled -> {
                                     println("Call was cancelled forcefully")
@@ -138,11 +190,11 @@ object PostsRepository {
                                     println("Network Error :: " + t.localizedMessage)
                                 }
                             }
-                            onPosts(emptyList())
                         }
                     }
                 }
             })
         }
+        return commentDao?.loadComments() ?: MutableLiveData()
     }
 }

@@ -26,9 +26,7 @@ class PostActivity : AppCompatActivity() {
             (it.getSerializableExtra(ARG_POST) as Post?)?.let{ post ->
                 this.post = post
                 binding.post = post
-                post.comments?.let { commens ->
-                    prepareRecyclerView(binding.commentsRecyclerView, commens)
-                }
+                prepareRecyclerView(binding.commentsRecyclerView, post.comments)
             }
         }
     }

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.databinding.PostRowBinding
 
-class PostListAdapter(private val posts: List<Post>): RecyclerView.Adapter<PostListAdapter.PostListViewHolder>()  {
+class PostListAdapter(var posts: List<Post>): RecyclerView.Adapter<PostListAdapter.PostListViewHolder>()  {
     private lateinit var mListener: OnItemListener
     inner class PostListViewHolder(val binding: PostRowBinding): RecyclerView.ViewHolder(binding.root)
 

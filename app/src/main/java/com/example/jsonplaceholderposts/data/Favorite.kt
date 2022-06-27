@@ -1,15 +1,13 @@
 package com.example.jsonplaceholderposts.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity
-data class Comment(
+data class Favorite(
     @PrimaryKey
-    val id: Int,
-    val name: String,
-    val email: String,
-    val body: String,
-    val postId: Int,
+    @ColumnInfo(name = "post_id")
+    val postId: Int
 ): Serializable

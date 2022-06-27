@@ -8,22 +8,15 @@ import com.example.jsonplaceholderposts.repository.PostsRepository
 
 class PostListViewModel: ViewModel() {
 
-    private val _posts = MutableLiveData<List<Post>>()
-    val posts: LiveData<List<Post>> get() = _posts
-
-    private val _loadingPostList = MutableLiveData<Boolean>()
-    val loadingPostList: LiveData<Boolean> get() = _loadingPostList
-
-    init {
-        loadPosts()
-    }
+    val posts = PostsRepository.getPostList()
+    val comments = PostsRepository.getComments()
+    val users = PostsRepository.getUsers()
+    val loadingPostList = PostsRepository.loadingPostList
+    val loadingUsers = PostsRepository.loadingUsers
+    val loadingComments = PostsRepository.loadingComments
 
     fun loadPosts() {
-        _loadingPostList.value = true
-        PostsRepository.getPostList { posts ->
-            _posts.value = posts
-            _loadingPostList.value = false
-        }
+        PostsRepository.refreshData()
     }
 
 }
