@@ -69,7 +69,7 @@ class PostListActivityTest {
         onView(withId(R.id.postsRecyclerView))
             .check(
                 matches(
-                    inThePosition(0, hasDescendant(withText(FakePosts.posts[0].title )))
+                    inThePosition(0, hasDescendant(withText(FakePosts.posts[0].title)))
                 )
             )
 
@@ -95,8 +95,14 @@ class PostListActivityTest {
             )
         intermission()
 
+        onView(withId(R.id.postTitle)).check(matches(withText(FakePosts.posts[0].title)))
 
         onView(withId(R.id.btnRemoveFromFav)).perform(click())
+        onView(withId(R.id.btnAddToFav)).check(matches(isDisplayed()))
+        intermission()
+
+        onView(withId(R.id.btnAddToFav)).perform(click())
+        onView(withId(R.id.btnRemoveFromFav)).check(matches(isDisplayed()))
         intermission()
 
         // device back action / go back to postListScreen
