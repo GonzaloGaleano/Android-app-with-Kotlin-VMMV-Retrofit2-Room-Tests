@@ -1,6 +1,7 @@
 package com.example.jsonplaceholderposts.data
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
@@ -13,8 +14,10 @@ data class User (
     val email: String,
     val phone: String,
     val website: String,
-        ): Serializable {
-            fun getAtUsername(): String {
-                return "@${this.username}"
-            }
-        }
+): Serializable {
+    @Ignore
+    var posts: List<Post> = mutableListOf()
+    fun getAtUsername(): String {
+        return "@${this.username}"
+    }
+}

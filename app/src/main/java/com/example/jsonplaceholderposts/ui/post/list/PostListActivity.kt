@@ -13,14 +13,12 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jsonplaceholderposts.R
-import com.example.jsonplaceholderposts.api.Env
-import com.example.jsonplaceholderposts.api.JSONPlaceholderDBService
-import com.example.jsonplaceholderposts.api.RetrofitServiceBuilder
 import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.databinding.ActivityPostListBinding
+import com.example.jsonplaceholderposts.repository.ServiceLocator
 import com.example.jsonplaceholderposts.repository.ThePostDBRepository
 import com.example.jsonplaceholderposts.ui.post.show.PostActivity
 import retrofit2.Call
@@ -40,7 +38,7 @@ class PostListActivity : AppCompatActivity(), PostListAdapter.OnItemListener {
     private var users: List<User> = listOf()
     private lateinit var adapter: PostListAdapter
     private val viewModel: PostListViewModel by viewModels {
-        PostLIstViewModelFactory(ThePostDBRepository)
+        PostLIstViewModelFactory(ServiceLocator.getThePostsRepository())
     }
     private lateinit var binding: ActivityPostListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
