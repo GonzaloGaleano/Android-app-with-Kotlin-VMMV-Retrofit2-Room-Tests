@@ -18,15 +18,15 @@ import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.repository.PostRepository
 import com.example.jsonplaceholderposts.repository.ServiceLocator
-import com.example.jsonplaceholderposts.utils.FakePosts
 import com.example.jsonplaceholderposts.utils.inThePosition
+import com.example.sharedtest.FakePosts
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PostListActivityTest {
     private val wannaWatch: Boolean = true
-    private val generalWait = 1500L
+    private val generalWait = 1000L
 
     @Test
     fun testingRecyclerViewInActivity() {

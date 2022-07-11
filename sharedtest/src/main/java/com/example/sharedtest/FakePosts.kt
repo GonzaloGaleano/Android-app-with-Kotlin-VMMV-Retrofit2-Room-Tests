@@ -1,4 +1,4 @@
-package com.example.jsonplaceholderposts.utils
+package com.example.sharedtest
 
 import com.example.jsonplaceholderposts.data.Comment
 import com.example.jsonplaceholderposts.data.Post
@@ -11,7 +11,7 @@ object FakePosts {
     val comments: MutableList<Comment> = mutableListOf()
 
     private const val totalUsers = 3
-    private const val totalPosts = 3
+    var totalPosts = 3
     private const val totalComments = 3
 
     private var lastUserId = 0

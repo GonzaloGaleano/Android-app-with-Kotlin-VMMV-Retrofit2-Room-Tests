@@ -8,7 +8,7 @@ import com.example.jsonplaceholderposts.data.Favorite
 import com.example.jsonplaceholderposts.data.Post
 import com.example.jsonplaceholderposts.data.User
 import com.example.jsonplaceholderposts.repository.PostRepository
-import com.example.jsonplaceholderposts.utils.FakePosts
+import com.example.sharedtest.FakePosts
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
